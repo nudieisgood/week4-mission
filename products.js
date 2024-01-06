@@ -20,10 +20,9 @@ const App = {
       axios
         .get(`${url}/api/${path}/admin/products`)
         .then((res) => {
-          console.log(res);
           products.value = res.data.products;
         })
-        .catch((error) => console.dir(error));
+        .catch((error) => console.log(error));
     };
 
     const checkAuth = async () => {
@@ -32,8 +31,8 @@ const App = {
         .then(() => {
           getProducts();
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.log(error);
           window.location.replace("/login.html");
         });
     };
