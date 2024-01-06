@@ -9,6 +9,7 @@ const path = "jeremychan"; //請加入個人 API Path
 const App = {
   setup() {
     const user = ref({ username: "", password: "" });
+    const errorMsg = ref("");
 
     const login = async () => {
       axios
@@ -20,10 +21,12 @@ const App = {
           document.cookie = `expDate=${exp}`;
           window.location.replace("/products.html");
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          errorMsg.value = error.data.message;
+        });
     };
 
-    return { user, login };
+    return { user, login, errorMsg };
   },
 };
 
