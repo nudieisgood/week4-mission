@@ -11,6 +11,7 @@
       integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="login.css" />
   </head>
 
   <body>
@@ -19,7 +20,7 @@
         <div class="row justify-content-center">
           <h1 class="h3 mb-3 font-weight-normal">請先登入</h1>
           <div class="col-8">
-            <form id="form" class="form-signin">
+            <form id="form" class="form-signin" @submit.prevent="login">
               <div class="form-floating mb-3">
                 <input
                   type="email"
@@ -28,6 +29,7 @@
                   placeholder="name@example.com"
                   required
                   autofocus
+                  v-model="user.username"
                 />
                 <label for="username">Email address</label>
               </div>
@@ -38,6 +40,7 @@
                   id="password"
                   placeholder="Password"
                   required
+                  v-model="user.password"
                 />
                 <label for="password">Password</label>
               </div>
@@ -50,7 +53,6 @@
         <p class="mt-5 mb-3 text-muted">&copy; 2021~∞ - 六角學院</p>
       </div>
     </div>
-
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.9.1/axios.min.js"
       integrity="sha512-Xk3wWei2TGrsh9kDSBKUMIjw/86sLUvhtnv9f7fOuIwhhiUTKz8szkWkzHthrM5Bb3Bu9idSzkxOrkzhcneuiw=="
@@ -66,5 +68,8 @@
       integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
       crossorigin="anonymous"
     ></script>
+    <script type="module">
+      import "./login.js";
+    </script>
   </body>
 </html>
