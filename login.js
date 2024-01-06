@@ -18,7 +18,7 @@ const App = {
           const exp = res.data.expired;
           document.cookie = `token=${token}`;
           document.cookie = `expDate=${exp}`;
-          window.location.replace("/products.html");
+          window.location = "products.html";
         })
         .catch((error) => {
           console.log(error);

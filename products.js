@@ -31,7 +31,7 @@ const App = {
         })
         .catch((error) => {
           console.log(error);
-          window.location.replace("/login.html");
+          window.location = "index.html";
         });
     };
 
