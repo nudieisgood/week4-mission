@@ -8,42 +8,45 @@ const url = "https://vue3-course-api.hexschool.io/v2"; // 請加入站點
 const path = "jeremychan"; //請加入個人 API Path
 
 const App = {
-  data() {
-    return { products: [], product: null };
-  },
-  methods: {
-    checkDetail(id) {
-      this.product = this.products.find((pro) => pro.id === id);
-    },
-    getProducts() {
+  setup() {
+    const products = ref([]);
+    const product = ref(null);
+    const checkDetail = (id) =>
+      (product.value = products.value.find((pro) => pro.id === id));
+
+    const getProducts = () => {
       axios
         .get(`${url}/api/${path}/admin/products`)
         .then((res) => {
-          this.products = res.data.products;
+          products.value = res.data.products;
         })
         .catch((error) => console.log(error));
-    },
-    checkAuth() {
+    };
+
+    const checkAuth = () => {
       axios
         .post(`${url}/api/user/check`)
         .then(() => {
-          this.getProducts();
+          getProducts();
         })
         .catch((error) => {
           console.log(error);
           window.location.replace("/login.html");
         });
-    },
-  },
-  mounted() {
-    const token = document.cookie.replace(
-      /(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
+    };
 
-    axios.defaults.headers.common["Authorization"] = token;
+    onMounted(() => {
+      const token = document.cookie.replace(
+        /(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/,
+        "$1"
+      );
 
-    this.checkAuth();
+      axios.defaults.headers.common["Authorization"] = token;
+
+      checkAuth();
+    });
+
+    return { product, products, checkDetail };
   },
 };
 
