@@ -16,6 +16,7 @@ const App = {
         .then((res) => {
           const token = res.data.token;
           const exp = res.data.expired;
+          console.log(token);
           document.cookie = `token=${token}`;
           document.cookie = `expDate=${exp}`;
           window.location = "products.html";
