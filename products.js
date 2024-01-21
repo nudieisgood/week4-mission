@@ -12,15 +12,18 @@ let delProductModal;
 const App = {
   setup() {
     const products = ref([]);
-    const product = ref({ imagesUrl: [] });
+    const tempProduct = ref({ imagesUrl: [] });
     const actionType = ref("");
+    const totalPages = ref();
+    const currentPage = ref();
 
-    const getProducts = () => {
+    const getProducts = (toPage = 1) => {
       axios
-        .get(`${url}/api/${path}/admin/products`)
+        .get(`${url}/api/${path}/admin/products?page=${toPage}`)
         .then((res) => {
-          console.log(res);
           products.value = res.data.products;
+          totalPages.value = res.data.pagination.total_pages;
+          currentPage.value = res.data.pagination.current_page;
         })
         .catch((error) => console.log(error));
     };
@@ -40,75 +43,25 @@ const App = {
     const showModal = (type, item) => {
       if (type === "add") {
         actionType.value = "addProduct";
-        product.value = { imagesUrl: [] };
+        tempProduct.value = { imagesUrl: [] };
 
         productModal.show();
       }
       if (type === "edit") {
         actionType.value = "editProduct";
 
-        product.value = { ...item };
+        tempProduct.value = { ...item };
         if (!item.imagesUrl) {
-          product.value.imagesUrl = [];
+          tempProduct.value.imagesUrl = [];
         }
-        product.value.imgUrl = "";
+        tempProduct.value.imgUrl = "";
         productModal.show();
       }
       if (type === "delete") {
         actionType.value = "deleteProduct";
-        product.value = { ...item };
+        tempProduct.value = { ...item };
         delProductModal.show();
       }
-    };
-
-    const optProduct = () => {
-      if (actionType.value === "addProduct") {
-        console.log(product.value);
-        axios
-          .post(`${url}/api/${path}/admin/product`, { data: product.value })
-          .then((res) => {
-            alert(res.data.message);
-            productModal.hide();
-            getProducts();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-      if (actionType.value === "editProduct") {
-        axios
-          .put(`${url}/api/${path}/admin/product/${product.value.id}`, {
-            data: product.value,
-          })
-          .then((res) => {
-            alert(res.data.message);
-            productModal.hide();
-            getProducts();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    };
-
-    const addPicToProduct = () => {
-      product.value.imagesUrl.push(product.value.imgUrl);
-      product.value.imgUrl = "";
-    };
-
-    const delProduct = () => {
-      axios
-        .delete(`${url}/api/${path}/admin/product/${product.value.id}`)
-        .then((res) => {
-          alert(res.data.message);
-        })
-        .catch((error) => console.log(error));
-      delProductModal.hide();
-      getProducts();
-    };
-
-    const delpics = () => {
-      product.value.imagesUrl = [];
     };
 
     onMounted(() => {
@@ -120,7 +73,78 @@ const App = {
       axios.defaults.headers.common["Authorization"] = token;
 
       checkAuth();
+    });
 
+    return {
+      actionType,
+      showModal,
+      tempProduct,
+      products,
+      getProducts,
+      totalPages,
+      currentPage,
+    };
+  },
+};
+
+const app = createApp(App);
+
+// 分頁元件
+app.component("pagination", {
+  template: "#pagination",
+  props: ["totalPages", "currentPage"],
+
+  setup(props, { emit }) {
+    const goToPage = (toPage) => {
+      emit("goToPage", toPage);
+    };
+
+    return { goToPage };
+  },
+});
+
+app.component("productModal", {
+  template: "#productModal",
+  props: ["actionType", "product", "test"],
+
+  setup(props, { emit }) {
+    const addPicToProduct = () => {
+      props.product.imagesUrl.push(props.product.imgUrl);
+      props.product.imgUrl = "";
+    };
+    const optProduct = () => {
+      if (props.actionType === "addProduct") {
+        axios
+          .post(`${url}/api/${path}/admin/product`, { data: props.product })
+          .then((res) => {
+            alert(res.data.message);
+            productModal.hide();
+            emit("updateProducts");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+      if (props.actionType === "editProduct") {
+        axios
+          .put(`${url}/api/${path}/admin/product/${props.product.id}`, {
+            data: props.product,
+          })
+          .then((res) => {
+            alert(res.data.message);
+            productModal.hide();
+            emit("updateProducts");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    };
+    const delpics = () => {
+      props.product.imagesUrl = [];
+    };
+
+    onMounted(() => {
       productModal = new bootstrap.Modal(
         document.querySelector("#productModal")
       );
@@ -130,18 +154,33 @@ const App = {
       );
     });
 
-    return {
-      delpics,
-      addPicToProduct,
-      actionType,
-      delProduct,
-      showModal,
-      optProduct,
-      product,
-      products,
-    };
+    return { addPicToProduct, optProduct, delpics };
   },
-};
+});
 
-const app = createApp(App);
+app.component("delProductModal", {
+  template: "#delProductModal",
+  props: ["product"],
+
+  setup(props, { emit }) {
+    const delProduct = () => {
+      axios
+        .delete(`${url}/api/${path}/admin/product/${props.product.id}`)
+        .then((res) => {
+          alert(res.data.message);
+        })
+        .catch((error) => console.log(error));
+      delProductModal.hide();
+      emit("updateProducts");
+    };
+    onMounted(() => {
+      delProductModal = new bootstrap.Modal(
+        document.querySelector("#delProductModal")
+      );
+    });
+
+    return { delProduct };
+  },
+});
+
 app.mount("#app");

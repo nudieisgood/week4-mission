@@ -73,9 +73,41 @@
               </tr>
             </tbody>
           </table>
+          <pagination
+            :total-pages="totalPages"
+            :current-page="currentPage"
+            @go-to-page="getProducts"
+          ></pagination>
         </div>
       </template>
-      <!-- Modal -->
+      <!-- modal -->
+      <product-modal
+        ref="product"
+        :action-type="actionType"
+        :product="tempProduct"
+        @update-products="getProducts"
+      ></product-modal>
+      <del-product-modal
+        ref="delProduct"
+        :product="tempProduct"
+        @update-products="getProducts"
+      ></del-product-modal>
+    </div>
+    <!-- Pagination -->
+    <script type="text/x-template" id="pagination">
+      <div class="pagination">
+        <div class='page-item' :class="{'active': page === currentPage}" v-for="(page,index) in totalPages">
+          <button  class="page-link"
+                  :key="index"
+                  @click="goToPage(page)"
+                  >
+              {{ page }}
+          </button>
+      </div>
+      </div>
+    </script>
+    <!-- Modal -->
+    <script type="text/x-template" id="productModal">
       <div
         id="productModal"
         ref="productModal"
@@ -260,6 +292,8 @@
           </div>
         </div>
       </div>
+    </script>
+    <script type="text/x-template" id="delProductModal">
       <div
         id="delProductModal"
         ref="delProductModal"
@@ -300,8 +334,8 @@
           </div>
         </div>
       </div>
-      <!-- Modal -->
-    </div>
+    </script>
+    <!-- Modal -->
 
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.9.1/axios.min.js"
