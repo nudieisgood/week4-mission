@@ -147,8 +147,19 @@
                         placeholder="請輸入圖片連結"
                       />
                     </div>
+
                     <img class="img-fluid" :src="product.imgUrl" alt="" />
+                       <div>
+                    <button
+                      class="btn btn-outline-primary btn-sm d-block w-100"
+                      @click="addPicToProduct"
+                    >
+                      加入此圖片
+                    </button>
                   </div>
+                  </div>
+                   <br>
+                    <p>已加入圖片</h5>
                   <div>
                     <template v-if="product.imagesUrl">
                       <img
@@ -159,14 +170,7 @@
                       />
                     </template>
                   </div>
-                  <div>
-                    <button
-                      class="btn btn-outline-primary btn-sm d-block w-100"
-                      @click="addPicToProduct"
-                    >
-                      新增圖片
-                    </button>
-                  </div>
+
                   <div>
                     <button
                       @click="delpics"
